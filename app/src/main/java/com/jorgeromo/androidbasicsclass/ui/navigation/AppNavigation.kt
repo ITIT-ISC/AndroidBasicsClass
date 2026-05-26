@@ -21,7 +21,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.jorgeromo.androidbasicsclass.screens.LoginScreen
+import com.jorgeromo.androidbasicsclass.ui.login.LoginScreenView
 import com.jorgeromo.androidbasicsclass.ui.thirdpartialids2.firstApiRequest.view.FirstApiRequestView
 import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.homeFirstPartialPDM1.view.HomeFirstPartialPDM1View
 import com.jorgeromo.androidbasicsclass.ui.personalinformation.homePersonalInformation.view.HomePersonalInformationView
@@ -51,7 +51,7 @@ fun AppNavigation() {
 
     NavHost(navController = rootNavController, startDestination = "login") {
         composable("login") {
-            LoginScreen(
+            LoginScreenView(
                 onLoginClick = {
                     rootNavController.navigate("tabs") {
                         popUpTo("login") { inclusive = true }

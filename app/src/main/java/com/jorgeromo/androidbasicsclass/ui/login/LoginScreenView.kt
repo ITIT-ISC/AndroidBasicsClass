@@ -1,4 +1,4 @@
-package com.jorgeromo.androidbasicsclass.screens
+package com.jorgeromo.androidbasicsclass.ui.login
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -22,7 +22,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun LoginScreen(onLoginClick: () -> Unit) {
+fun LoginScreenView(onLoginClick: () -> Unit) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
