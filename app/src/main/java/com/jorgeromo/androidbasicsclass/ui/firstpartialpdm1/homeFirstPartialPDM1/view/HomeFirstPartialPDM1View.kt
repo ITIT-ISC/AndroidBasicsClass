@@ -1,7 +1,9 @@
 package com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.homeFirstPartialPDM1.view
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,12 +18,15 @@ import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.homeFirstPartialPDM1
  */
 @Composable
 fun HomeFirstPartialPDM1View(
-    homeViewModel: HomeFirstPartialPDM1ViewModel = viewModel()
+    homeViewModel: HomeFirstPartialPDM1ViewModel = viewModel(),
+    onNavigateToSharedPreferencesExample: () -> Unit = {}
 ) {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
+
+    Column {
         Text(text = "First Partial PDM1")
+        Button(
+            onClick = onNavigateToSharedPreferencesExample
+        ) { Text("Shared Preferences")}
+
     }
 }
