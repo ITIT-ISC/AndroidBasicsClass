@@ -24,6 +24,7 @@ import androidx.navigation.compose.rememberNavController
 import com.jorgeromo.androidbasicsclass.ui.login.LoginScreenView
 import com.jorgeromo.androidbasicsclass.ui.thirdpartialids2.firstApiRequest.view.FirstApiRequestView
 import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.homeFirstPartialPDM1.view.HomeFirstPartialPDM1View
+import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.jetpackcomposeExamples.view.JetpackComposeExamplesView
 import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.sharedPreferencesExample.view.SharedPreferencesExampleView
 import com.jorgeromo.androidbasicsclass.ui.personalinformation.homePersonalInformation.view.HomePersonalInformationView
 import com.jorgeromo.androidbasicsclass.ui.secondpartialpdm1.homeSecondPartialPDM1.view.HomeSecondPartialPDM1View
@@ -81,7 +82,8 @@ fun AppNavigation() {
         composable("tabs") {
             TabsScaffold(
                 onNavigateToFirstApiRequest = { rootNavController.navigate("first_api_request") },
-                onNavigateToSharedPreferencesExample = { rootNavController.navigate("shared_preferences_example") }
+                onNavigateToSharedPreferencesExample = { rootNavController.navigate("shared_preferences_example") },
+                onNavigateToJetPackComposeExample = { rootNavController.navigate("jetpack_compose_examples") }
             )
         }
         // Pantallas de detalle: cada una se registra con el MISMO string que se usó
@@ -92,6 +94,10 @@ fun AppNavigation() {
         }
         composable("shared_preferences_example") {
             SharedPreferencesExampleView(onBack = { rootNavController.popBackStack() })
+        }
+
+        composable("jetpack_compose_examples") {
+            JetpackComposeExamplesView(onBack = { rootNavController.popBackStack() })
         }
     }
 }
@@ -108,7 +114,8 @@ fun AppNavigation() {
 @Composable
 private fun TabsScaffold(
     onNavigateToFirstApiRequest: () -> Unit,
-    onNavigateToSharedPreferencesExample: () -> Unit
+    onNavigateToSharedPreferencesExample: () -> Unit,
+    onNavigateToJetPackComposeExample: () -> Unit
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -153,7 +160,10 @@ private fun TabsScaffold(
                 HomeThirdPartialIDS2View(onNavigateToFirstApiRequest = onNavigateToFirstApiRequest)
             }
             composable(AppRoute.FirstPartialPDM1.route) {
-                HomeFirstPartialPDM1View(onNavigateToSharedPreferencesExample = onNavigateToSharedPreferencesExample)
+                HomeFirstPartialPDM1View(
+                    onNavigateToSharedPreferencesExample = onNavigateToSharedPreferencesExample,
+                    onNavigateToJetPackComposeExample = onNavigateToJetPackComposeExample
+                )
             }
             composable(AppRoute.SecondPartialPDM1.route) { HomeSecondPartialPDM1View() }
             composable(AppRoute.ThirdPartialPDM1.route) { HomeThirdPartialPDM1View() }
