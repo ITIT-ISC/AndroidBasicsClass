@@ -22,6 +22,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.jorgeromo.androidbasicsclass.ui.login.LoginScreenView
+import com.jorgeromo.androidbasicsclass.ui.onboarding.OnboardingView
 import com.jorgeromo.androidbasicsclass.ui.thirdpartialids2.firstApiRequest.view.FirstApiRequestView
 import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.detailBox.DetailBoxView
 import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.detailColumn.DetailColumnView
@@ -68,7 +69,19 @@ private val TABS = listOf(
 fun AppNavigation() {
     val rootNavController = rememberNavController()
 
-    NavHost(navController = rootNavController, startDestination = "login") {
+    NavHost(navController = rootNavController, startDestination = "onboarding") {
+        // Onboarding: primera pantalla que ve el usuario. Al terminar navega a "login"
+        // y saca "onboarding" del back stack (inclusive = true) para que el botón de
+        // back no regrese a las pantallas de onboarding.
+        composable("onboarding") {
+            OnboardingView(
+                onFinishOnboarding = {
+                    rootNavController.navigate("login") {
+                        popUpTo("onboarding") { inclusive = true }
+                    }
+                }
+            )
+        }
         // Pantalla de login: al loguear, navega a "tabs" y saca "login" del back stack
         // (inclusive = true) para que el botón de back no regrese a la pantalla de login.
         composable("login") {
