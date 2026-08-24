@@ -24,7 +24,11 @@ import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.homeFirstPartialPDM1
 fun HomeFirstPartialPDM1View(
     homeViewModel: HomeFirstPartialPDM1ViewModel = viewModel(),
     onNavigateToSharedPreferencesExample: () -> Unit = {},
-    onNavigateToJetPackComposeExample: () -> Unit = {}
+    onNavigateToJetPackComposeExample: () -> Unit = {},
+    onNavigateToDetailColumn: () -> Unit = {},
+    onNavigateToDetailRow: () -> Unit = {},
+    onNavigateToDetailBox: () -> Unit = {},
+    onNavigateToDetailLogsToasts: () -> Unit = {}
 ) {
 
     Column(horizontalAlignment = Alignment.CenterHorizontally,
@@ -41,6 +45,26 @@ fun HomeFirstPartialPDM1View(
             onNavigateToJetPackComposeExample()
         }, modifier = Modifier.fillMaxWidth())
         { Text("Jetpack Compose Examples") }
+
+        Button(
+            onClick = onNavigateToDetailColumn,
+            modifier = Modifier.fillMaxWidth()
+        ) { Text("Detail Column") }
+
+        Button(
+            onClick = onNavigateToDetailRow,
+            modifier = Modifier.fillMaxWidth()
+        ) { Text("Detail Row") }
+
+        Button(
+            onClick = onNavigateToDetailBox,
+            modifier = Modifier.fillMaxWidth()
+        ) { Text("Detail Box") }
+
+        Button(
+            onClick = onNavigateToDetailLogsToasts,
+            modifier = Modifier.fillMaxWidth()
+        ) { Text("Logs y Toasts") }
 
     }
 }

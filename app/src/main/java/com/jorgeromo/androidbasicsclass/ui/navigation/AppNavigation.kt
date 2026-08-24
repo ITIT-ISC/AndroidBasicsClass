@@ -23,6 +23,10 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.jorgeromo.androidbasicsclass.ui.login.LoginScreenView
 import com.jorgeromo.androidbasicsclass.ui.thirdpartialids2.firstApiRequest.view.FirstApiRequestView
+import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.detailBox.DetailBoxView
+import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.detailColumn.DetailColumnView
+import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.detailLogsToasts.DetailLogsToastsView
+import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.detailRow.DetailRowView
 import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.homeFirstPartialPDM1.view.HomeFirstPartialPDM1View
 import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.jetpackcomposeExamples.view.JetpackComposeExamplesView
 import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.sharedPreferencesExample.view.SharedPreferencesExampleView
@@ -83,7 +87,11 @@ fun AppNavigation() {
             TabsScaffold(
                 onNavigateToFirstApiRequest = { rootNavController.navigate("first_api_request") },
                 onNavigateToSharedPreferencesExample = { rootNavController.navigate("shared_preferences_example") },
-                onNavigateToJetPackComposeExample = { rootNavController.navigate("jetpack_compose_examples") }
+                onNavigateToJetPackComposeExample = { rootNavController.navigate("jetpack_compose_examples") },
+                onNavigateToDetailColumn = { rootNavController.navigate("detail_column") },
+                onNavigateToDetailRow = { rootNavController.navigate("detail_row") },
+                onNavigateToDetailBox = { rootNavController.navigate("detail_box") },
+                onNavigateToDetailLogsToasts = { rootNavController.navigate("detail_logs_toasts") }
             )
         }
         // Pantallas de detalle: cada una se registra con el MISMO string que se usó
@@ -98,6 +106,22 @@ fun AppNavigation() {
 
         composable("jetpack_compose_examples") {
             JetpackComposeExamplesView(onBack = { rootNavController.popBackStack() })
+        }
+
+        composable("detail_column") {
+            DetailColumnView(onBack = { rootNavController.popBackStack() })
+        }
+
+        composable("detail_row") {
+            DetailRowView(onBack = { rootNavController.popBackStack() })
+        }
+
+        composable("detail_box") {
+            DetailBoxView(onBack = { rootNavController.popBackStack() })
+        }
+
+        composable("detail_logs_toasts") {
+            DetailLogsToastsView(onBack = { rootNavController.popBackStack() })
         }
     }
 }
@@ -115,7 +139,11 @@ fun AppNavigation() {
 private fun TabsScaffold(
     onNavigateToFirstApiRequest: () -> Unit,
     onNavigateToSharedPreferencesExample: () -> Unit,
-    onNavigateToJetPackComposeExample: () -> Unit
+    onNavigateToJetPackComposeExample: () -> Unit,
+    onNavigateToDetailColumn: () -> Unit,
+    onNavigateToDetailRow: () -> Unit,
+    onNavigateToDetailBox: () -> Unit,
+    onNavigateToDetailLogsToasts: () -> Unit
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -162,7 +190,11 @@ private fun TabsScaffold(
             composable(AppRoute.FirstPartialPDM1.route) {
                 HomeFirstPartialPDM1View(
                     onNavigateToSharedPreferencesExample = onNavigateToSharedPreferencesExample,
-                    onNavigateToJetPackComposeExample = onNavigateToJetPackComposeExample
+                    onNavigateToJetPackComposeExample = onNavigateToJetPackComposeExample,
+                    onNavigateToDetailColumn = onNavigateToDetailColumn,
+                    onNavigateToDetailRow = onNavigateToDetailRow,
+                    onNavigateToDetailBox = onNavigateToDetailBox,
+                    onNavigateToDetailLogsToasts = onNavigateToDetailLogsToasts
                 )
             }
             composable(AppRoute.SecondPartialPDM1.route) { HomeSecondPartialPDM1View() }
