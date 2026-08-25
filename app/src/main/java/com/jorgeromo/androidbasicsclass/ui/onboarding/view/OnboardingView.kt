@@ -1,4 +1,4 @@
-package com.jorgeromo.androidbasicsclass.ui.onboarding
+package com.jorgeromo.androidbasicsclass.ui.onboarding.view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,58 +14,48 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.launch
-
-private data class OnboardingPage(
-    val icon: ImageVector,
-    val title: String,
-    val description: String
-)
-
-private val onboardingPages = listOf(
-    OnboardingPage(
-        icon = Icons.Filled.Star,
-        title = "Bienvenido a Android Basics Class",
-        description = "Aprende Android paso a paso con ejemplos prácticos y sencillos."
-    ),
-    OnboardingPage(
-        icon = Icons.Filled.Code,
-        title = "Practica con ejemplos reales",
-        description = "Explora ejercicios de Compose, navegación y consumo de APIs."
-    ),
-    OnboardingPage(
-        icon = Icons.Filled.CheckCircle,
-        title = "Todo listo para comenzar",
-        description = "Inicia sesión y empieza a explorar la aplicación."
-    )
-)
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.jorgeromo.androidbasicsclass.ui.onboarding.model.OnboardingPage
+import com.jorgeromo.androidbasicsclass.ui.onboarding.viewmodel.OnboardingViewModel
 
 /**
  * Onboarding con 3 pantallas (imagen, título, descripción) mostradas con un [HorizontalPager].
  * El botón dice "Siguiente" salvo en la última página, donde dice "Iniciar sesión" y dispara
  * [onFinishOnboarding] para que quien la use decida a dónde navegar.
+ *
+ * El estado (páginas, página actual) vive en [OnboardingViewModel]; esta vista solo lo observa
+ * y sincroniza el [androidx.compose.foundation.pager.PagerState] con él.
  */
 @Composable
-fun OnboardingView(onFinishOnboarding: () -> Unit) {
-    val pagerState = rememberPagerState(pageCount = { onboardingPages.size })
-    val coroutineScope = rememberCoroutineScope()
-    val isLastPage = pagerState.currentPage == onboardingPages.lastIndex
+fun OnboardingView(
+    onFinishOnboarding: () -> Unit,
+    viewModel: OnboardingViewModel = viewModel()
+) {
+    val uiState by viewModel.uiState.collectAsState()
+    val pagerState = rememberPagerState(pageCount = { uiState.pages.size })
+
+    LaunchedEffect(pagerState.currentPage) {
+        viewModel.onPageChanged(pagerState.currentPage)
+    }
+
+    LaunchedEffect(uiState.currentPageIndex) {
+        if (pagerState.currentPage != uiState.currentPageIndex) {
+            pagerState.animateScrollToPage(uiState.currentPageIndex)
+        }
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         HorizontalPager(
@@ -74,7 +64,7 @@ fun OnboardingView(onFinishOnboarding: () -> Unit) {
                 .weight(1f)
                 .fillMaxWidth()
         ) { page ->
-            OnboardingPageContent(onboardingPages[page])
+            OnboardingPageContent(uiState.pages[page])
         }
 
         Row(
@@ -83,8 +73,8 @@ fun OnboardingView(onFinishOnboarding: () -> Unit) {
                 .padding(bottom = 24.dp),
             horizontalArrangement = Arrangement.Center
         ) {
-            repeat(onboardingPages.size) { index ->
-                val isSelected = index == pagerState.currentPage
+            repeat(uiState.pages.size) { index ->
+                val isSelected = index == uiState.currentPageIndex
                 Box(
                     modifier = Modifier
                         .padding(horizontal = 4.dp)
@@ -109,12 +99,8 @@ fun OnboardingView(onFinishOnboarding: () -> Unit) {
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             OutlinedButton(
-                onClick = {
-                    coroutineScope.launch {
-                        pagerState.animateScrollToPage(pagerState.currentPage - 1)
-                    }
-                },
-                enabled = pagerState.currentPage != 0,
+                onClick = { viewModel.goToPreviousPage() },
+                enabled = uiState.currentPageIndex != 0,
                 modifier = Modifier.weight(1f)
             ) {
                 Text("Anterior")
@@ -122,17 +108,15 @@ fun OnboardingView(onFinishOnboarding: () -> Unit) {
 
             Button(
                 onClick = {
-                    if (isLastPage) {
+                    if (uiState.isLastPage) {
                         onFinishOnboarding()
                     } else {
-                        coroutineScope.launch {
-                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                        }
+                        viewModel.goToNextPage()
                     }
                 },
                 modifier = Modifier.weight(1f)
             ) {
-                Text(if (isLastPage) "Iniciar sesión" else "Siguiente")
+                Text(if (uiState.isLastPage) "Iniciar sesión" else "Siguiente")
             }
         }
     }

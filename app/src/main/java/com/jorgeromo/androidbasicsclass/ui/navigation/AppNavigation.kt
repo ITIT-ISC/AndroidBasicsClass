@@ -22,7 +22,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.jorgeromo.androidbasicsclass.ui.login.LoginScreenView
-import com.jorgeromo.androidbasicsclass.ui.onboarding.OnboardingView
+import com.jorgeromo.androidbasicsclass.ui.onboarding.view.OnboardingView
 import com.jorgeromo.androidbasicsclass.ui.thirdpartialids2.firstApiRequest.view.FirstApiRequestView
 import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.detailBox.DetailBoxView
 import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.detailColumn.DetailColumnView
