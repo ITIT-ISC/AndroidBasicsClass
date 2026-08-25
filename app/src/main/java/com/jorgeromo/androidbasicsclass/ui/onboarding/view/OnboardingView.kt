@@ -109,6 +109,7 @@ fun OnboardingView(
             Button(
                 onClick = {
                     if (uiState.isLastPage) {
+                        viewModel.completeOnboarding()
                         onFinishOnboarding()
                     } else {
                         viewModel.goToNextPage()
