@@ -26,7 +26,7 @@ class OnboardingViewModel(application: Application) : AndroidViewModel(applicati
     private val pages = listOf(
         OnboardingPage(
             icon = Icons.Filled.Star,
-            title = "Bienvenido a Android Basics Class",
+            title = "Bienvenido a Android Class",
             description = "Aprende Android paso a paso con ejemplos prácticos y sencillos."
         ),
         OnboardingPage(
