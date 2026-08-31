@@ -14,15 +14,18 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.jorgeromo.androidbasicsclass.ui.login.LoginScreenView
-import com.jorgeromo.androidbasicsclass.ui.onboarding.OnboardingView
+import com.jorgeromo.androidbasicsclass.ui.onboarding.data.OnboardingPreferences
+import com.jorgeromo.androidbasicsclass.ui.onboarding.view.OnboardingView
 import com.jorgeromo.androidbasicsclass.ui.thirdpartialids2.firstApiRequest.view.FirstApiRequestView
 import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.detailBox.DetailBoxView
 import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.detailColumn.DetailColumnView
@@ -68,8 +71,14 @@ private val TABS = listOf(
 @Composable
 fun AppNavigation() {
     val rootNavController = rememberNavController()
+    val context = LocalContext.current
+    // Si el usuario ya completó el onboarding en un inicio anterior (guardado en
+    // SharedPreferences), arrancamos directo en "login" y nos saltamos el onboarding.
+    val startDestination = remember {
+        if (OnboardingPreferences(context).hasCompletedOnboarding()) "login" else "onboarding"
+    }
 
-    NavHost(navController = rootNavController, startDestination = "onboarding") {
+    NavHost(navController = rootNavController, startDestination = startDestination) {
         // Onboarding: primera pantalla que ve el usuario. Al terminar navega a "login"
         // y saca "onboarding" del back stack (inclusive = true) para que el botón de
         // back no regrese a las pantallas de onboarding.
