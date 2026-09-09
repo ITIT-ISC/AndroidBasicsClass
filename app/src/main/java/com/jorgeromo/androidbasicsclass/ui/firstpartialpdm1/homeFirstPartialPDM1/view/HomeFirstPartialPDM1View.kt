@@ -28,7 +28,12 @@ fun HomeFirstPartialPDM1View(
     onNavigateToDetailColumn: () -> Unit = {},
     onNavigateToDetailRow: () -> Unit = {},
     onNavigateToDetailBox: () -> Unit = {},
-    onNavigateToDetailLogsToasts: () -> Unit = {}
+    onNavigateToDetailLogsToasts: () -> Unit = {},
+    onNavigateToPetsHome: () -> Unit = {},
+    onNavigateToSportsHome: () -> Unit = {},
+    onNavigateToPickarooHome: () -> Unit = {},
+    onNavigateToCafeteriaHome: () -> Unit = {},
+    onNavigateToFinanceHome: () -> Unit = {}
 ) {
 
     Column(horizontalAlignment = Alignment.CenterHorizontally,
@@ -65,6 +70,31 @@ fun HomeFirstPartialPDM1View(
             onClick = onNavigateToDetailLogsToasts,
             modifier = Modifier.fillMaxWidth()
         ) { Text("Logs y Toasts") }
+
+        Button(
+            onClick = onNavigateToPetsHome,
+            modifier = Modifier.fillMaxWidth()
+        ) { Text("Mascotas (API)") }
+
+        Button(
+            onClick = onNavigateToSportsHome,
+            modifier = Modifier.fillMaxWidth()
+        ) { Text("Deportes (API)") }
+
+        Button(
+            onClick = onNavigateToPickarooHome,
+            modifier = Modifier.fillMaxWidth()
+        ) { Text("Pickaroo (API)") }
+
+        Button(
+            onClick = onNavigateToCafeteriaHome,
+            modifier = Modifier.fillMaxWidth()
+        ) { Text("Cafetería (API)") }
+
+        Button(
+            onClick = onNavigateToFinanceHome,
+            modifier = Modifier.fillMaxWidth()
+        ) { Text("Finanzas (API)") }
 
     }
 }

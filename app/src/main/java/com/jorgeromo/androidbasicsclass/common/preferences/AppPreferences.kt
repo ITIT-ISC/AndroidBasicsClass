@@ -29,4 +29,8 @@ class AppPreferences(context: Context) {
     fun putString(key: String, value: String) {
         prefs.edit().putString(key, value).apply()
     }
+
+    fun remove(vararg keys: String) {
+        prefs.edit().apply { keys.forEach { remove(it) } }.apply()
+    }
 }
