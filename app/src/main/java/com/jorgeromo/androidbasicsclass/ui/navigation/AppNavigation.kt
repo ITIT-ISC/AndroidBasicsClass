@@ -19,11 +19,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.jorgeromo.androidbasicsclass.ui.login.LoginScreenView
+import com.jorgeromo.androidbasicsclass.ui.auth.data.SessionPreferences
+import com.jorgeromo.androidbasicsclass.ui.auth.view.LoginScreenView
+import com.jorgeromo.androidbasicsclass.ui.auth.viewmodel.LogoutViewModel
 import com.jorgeromo.androidbasicsclass.ui.onboarding.data.OnboardingPreferences
 import com.jorgeromo.androidbasicsclass.ui.onboarding.view.OnboardingView
 import com.jorgeromo.androidbasicsclass.ui.thirdpartialids2.firstApiRequest.view.FirstApiRequestView
@@ -32,6 +35,11 @@ import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.detailColumn.DetailC
 import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.detailLogsToasts.DetailLogsToastsView
 import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.detailRow.DetailRowView
 import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.homeFirstPartialPDM1.view.HomeFirstPartialPDM1View
+import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.petsHome.view.PetsHomeView
+import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.sportsHome.view.SportsHomeView
+import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.pickarooHome.view.PickarooHomeView
+import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.cafeteriaHome.view.CafeteriaHomeView
+import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.financeHome.view.FinanceHomeView
 import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.jetpackcomposeExamples.view.JetpackComposeExamplesView
 import com.jorgeromo.androidbasicsclass.ui.firstpartialpdm1.sharedPreferencesExample.view.SharedPreferencesExampleView
 import com.jorgeromo.androidbasicsclass.ui.personalinformation.homePersonalInformation.view.HomePersonalInformationView
@@ -72,10 +80,16 @@ private val TABS = listOf(
 fun AppNavigation() {
     val rootNavController = rememberNavController()
     val context = LocalContext.current
-    // Si el usuario ya completó el onboarding en un inicio anterior (guardado en
-    // SharedPreferences), arrancamos directo en "login" y nos saltamos el onboarding.
+    // Pantalla inicial según lo que ya está guardado en SharedPreferences:
+    // - Si hay sesión activa (tokens guardados) → directo a "tabs".
+    // - Si ya vio el onboarding pero no tiene sesión → "login".
+    // - Si es la primera vez → "onboarding".
     val startDestination = remember {
-        if (OnboardingPreferences(context).hasCompletedOnboarding()) "login" else "onboarding"
+        when {
+            SessionPreferences(context).isLoggedIn() -> "tabs"
+            OnboardingPreferences(context).hasCompletedOnboarding() -> "login"
+            else -> "onboarding"
+        }
     }
 
     NavHost(navController = rootNavController, startDestination = startDestination) {
@@ -95,7 +109,7 @@ fun AppNavigation() {
         // (inclusive = true) para que el botón de back no regrese a la pantalla de login.
         composable("login") {
             LoginScreenView(
-                onLoginClick = {
+                onLoginSuccess = {
                     rootNavController.navigate("tabs") {
                         popUpTo("login") { inclusive = true }
                     }
@@ -106,14 +120,27 @@ fun AppNavigation() {
         // cada tab solo declaran vacíos: es la única función con acceso a rootNavController,
         // así que es la única que puede decidir a qué ruta se navega.
         composable("tabs") {
+            val logoutViewModel: LogoutViewModel = viewModel()
             TabsScaffold(
+                onLogout = {
+                    logoutViewModel.logout {
+                        rootNavController.navigate("login") {
+                            popUpTo("tabs") { inclusive = true }
+                        }
+                    }
+                },
                 onNavigateToFirstApiRequest = { rootNavController.navigate("first_api_request") },
                 onNavigateToSharedPreferencesExample = { rootNavController.navigate("shared_preferences_example") },
                 onNavigateToJetPackComposeExample = { rootNavController.navigate("jetpack_compose_examples") },
                 onNavigateToDetailColumn = { rootNavController.navigate("detail_column") },
                 onNavigateToDetailRow = { rootNavController.navigate("detail_row") },
                 onNavigateToDetailBox = { rootNavController.navigate("detail_box") },
-                onNavigateToDetailLogsToasts = { rootNavController.navigate("detail_logs_toasts") }
+                onNavigateToDetailLogsToasts = { rootNavController.navigate("detail_logs_toasts") },
+                onNavigateToPetsHome = { rootNavController.navigate("pets_home") },
+                onNavigateToSportsHome = { rootNavController.navigate("sports_home") },
+                onNavigateToPickarooHome = { rootNavController.navigate("pickaroo_home") },
+                onNavigateToCafeteriaHome = { rootNavController.navigate("cafeteria_home") },
+                onNavigateToFinanceHome = { rootNavController.navigate("finance_home") }
             )
         }
         // Pantallas de detalle: cada una se registra con el MISMO string que se usó
@@ -145,6 +172,26 @@ fun AppNavigation() {
         composable("detail_logs_toasts") {
             DetailLogsToastsView(onBack = { rootNavController.popBackStack() })
         }
+
+        composable("pets_home") {
+            PetsHomeView(onBack = { rootNavController.popBackStack() })
+        }
+
+        composable("sports_home") {
+            SportsHomeView(onBack = { rootNavController.popBackStack() })
+        }
+
+        composable("pickaroo_home") {
+            PickarooHomeView(onBack = { rootNavController.popBackStack() })
+        }
+
+        composable("cafeteria_home") {
+            CafeteriaHomeView(onBack = { rootNavController.popBackStack() })
+        }
+
+        composable("finance_home") {
+            FinanceHomeView(onBack = { rootNavController.popBackStack() })
+        }
     }
 }
 
@@ -159,13 +206,19 @@ fun AppNavigation() {
  */
 @Composable
 private fun TabsScaffold(
+    onLogout: () -> Unit,
     onNavigateToFirstApiRequest: () -> Unit,
     onNavigateToSharedPreferencesExample: () -> Unit,
     onNavigateToJetPackComposeExample: () -> Unit,
     onNavigateToDetailColumn: () -> Unit,
     onNavigateToDetailRow: () -> Unit,
     onNavigateToDetailBox: () -> Unit,
-    onNavigateToDetailLogsToasts: () -> Unit
+    onNavigateToDetailLogsToasts: () -> Unit,
+    onNavigateToPetsHome: () -> Unit,
+    onNavigateToSportsHome: () -> Unit,
+    onNavigateToPickarooHome: () -> Unit,
+    onNavigateToCafeteriaHome: () -> Unit,
+    onNavigateToFinanceHome: () -> Unit
 ) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -216,12 +269,19 @@ private fun TabsScaffold(
                     onNavigateToDetailColumn = onNavigateToDetailColumn,
                     onNavigateToDetailRow = onNavigateToDetailRow,
                     onNavigateToDetailBox = onNavigateToDetailBox,
-                    onNavigateToDetailLogsToasts = onNavigateToDetailLogsToasts
+                    onNavigateToDetailLogsToasts = onNavigateToDetailLogsToasts,
+                    onNavigateToPetsHome = onNavigateToPetsHome,
+                    onNavigateToSportsHome = onNavigateToSportsHome,
+                    onNavigateToPickarooHome = onNavigateToPickarooHome,
+                    onNavigateToCafeteriaHome = onNavigateToCafeteriaHome,
+                    onNavigateToFinanceHome = onNavigateToFinanceHome
                 )
             }
             composable(AppRoute.SecondPartialPDM1.route) { HomeSecondPartialPDM1View() }
             composable(AppRoute.ThirdPartialPDM1.route) { HomeThirdPartialPDM1View() }
-            composable(AppRoute.PersonalInformation.route) { HomePersonalInformationView() }
+            composable(AppRoute.PersonalInformation.route) {
+                HomePersonalInformationView(onLogout = onLogout)
+            }
         }
     }
 }
